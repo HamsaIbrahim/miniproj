@@ -1,0 +1,16 @@
+<!doctype html>
+  <html>
+    <head>
+      <title>Bargain books</title>
+    </head>
+    <body>
+      <h1> Our bargains books</h1>
+      <h2> our books:</h2>
+     <ul>
+      <% for(let i = 0; i < availableBooks.length; i++) { %>
+         <li><%= availableBooks[i]['name'] %>  £<%= availableBooks[i]['price'] %></li>
+         <% } %>
+      </ul>
+</body>
+</html>
+~       

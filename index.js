@@ -2,11 +2,34 @@
 var express = require ('express')
 var ejs = require('ejs')
 var bodyParser= require ('body-parser')
+const mysql = require('mysql');
 
 // Create the express application object
 const app = express()
 const port = 8000
 app.use(bodyParser.urlencoded({ extended: true }))
+
+//define the database connection
+
+const db = mysql.createConnection ({
+
+	host : 'localhost',
+	user: 'root',
+	password: 'hamsa',
+	database: 'myBookshop'
+});
+
+//connect to the database
+db.connect((err) => {
+	if (err) {
+	throw err;
+}
+
+	console.log('connected to the database');
+});
+global.db = db;
+
+
 
 // Set the directory where Express will pick up HTML files
 // __dirname will get the current directory
