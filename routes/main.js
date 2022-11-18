@@ -1,4 +1,13 @@
 module.exports = function(app, shopData) {
+const redirectLogin = (req, res, next) => {
+if (!req.session.userId ) {
+res.redirect('./login')
+} else { next (); }
+}
+
+const { check, validationResult } = require('express-validator');
+
+
 
     // Handle our routes
     app.get('/',function(req,res){
@@ -7,7 +16,7 @@ module.exports = function(app, shopData) {
     app.get('/about',function(req,res){
         res.render('about.ejs', shopData);
     });
-    app.get('/search',function(req,res){
+    app.get('/search',redirectLogin, function(req,res){
         res.render("search.ejs", shopData);
     });
     app.get('/search-result', function (req, res) {
@@ -22,9 +31,17 @@ module.exports = function(app, shopData) {
     app.get('/login',function(req,res){
         res.render("login.ejs", shopData);
     });
-                                                                                                                                               
+	//logout
+	app.get('/logout', redirectLogin, (req,res) => {
+	req.session.destroy(err => {
+	if (err) {
+	return res.redirect('./')
+	}
+	res.send('you are now logged out. <a href='+'./'+'>Home</a>');
+	})
+	})                                                                                                                                               
     //delete user route
-     app.get('/deleteuser',function(req,res){
+     app.get('/deleteuser',redirectLogin, function(req,res){
         res.render("deleteuser.ejs", shopData);                                                                                                
 
     });                                                                                                                                        
@@ -58,6 +75,8 @@ module.exports = function(app, shopData) {
               res.send(err);                                                                                                                   
             }
              else if (result == true) {
+	    // Save user session here, when login is successful
+	    req.session.userId = req.body.username;
              res.send("succesful login!");
             }
             else {
@@ -67,7 +86,7 @@ module.exports = function(app, shopData) {
                                                                             });
     });
 
-    app.get('/listusers', function(req, res) {
+    app.get('/listusers', redirectLogin, function(req, res) {
      let sqlquery = "SELECT * FROM userdetails";  
      db.query(sqlquery, (err, result) => {
            if (err) {
@@ -78,15 +97,19 @@ module.exports = function(app, shopData) {
         });
      });
 
-     app.post('/registered', function (req,res) {
-      const bcrypt = require('bcrypt');
+     app.post('/registered',[check('email').isEmail().normalizeEmail(),  check('password').isLength({min:8}), check('username').notEmpty().trim()], function (req,res) {
+      const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+	res.redirect('./register'); }
+	else {
+	const bcrypt = require('bcrypt');
       const saltRounds = 10;
       const plainPassword = req.body.password;
                                                                                                                                                
       
       bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
          sqlquery = "INSERT INTO userdetails (firstname, lastname, email, username, hashedPassword) VALUES (?,?,?,?,?)";
-         let newrecord = [req.body.first, req.body.last, req.body.email, req.body.username, hashedPassword];
+         let newrecord = [req.sanitize(req.body.first), req.sanitize(req.body.last), req.sanitize(req.body.email), req.sanitize(req.body.username), hashedPassword];
          db.query(sqlquery, newrecord, (err, result) => {
                 if (err) {
          
@@ -98,13 +121,15 @@ module.exports = function(app, shopData) {
              result += 'Your password is: '+ req.body.password +' your hashed password: '+ hashedPassword;
              res.send(result);                                                                                                                 
             });
+ 
          })
+	} 
      });
-      app.get('/addbook', function (req,res) {
+      app.get('/addbook',redirectLogin, function (req,res) {
         res.render('addbook.ejs', shopData);
     });
 
-    app.get('/list', function(req, res) {
+    app.get('/list', redirectLogin, function(req, res) {
         let sqlquery = "SELECT * FROM books"; 
         db.query(sqlquery, (err, result) => {
             if (err) {
@@ -114,7 +139,7 @@ module.exports = function(app, shopData) {
             res.render("list.ejs", newData)
          });
     });
-      app.get('/bargainbooks', function(req, res) {
+      app.get('/bargainbooks', redirectLogin, function(req, res) {
         let sqlquery = "SELECT name, price FROM books WHERE price<20"; 
         
         db.query(sqlquery, (err, result) => {
