@@ -9,8 +9,8 @@
   <ul>
                                                                                                                                                                                                                      
                                                                                                                                                                                                              
-     <% for(let i = 0; i < availableBooks.length; i++) { %>
-         <li><%= availableBooks[i]['name'] %>  £<%= availableBooks[i]['price'] %></li>
+     <% for(let i = 0; i < availableFood.length; i++) { %>
+         <li><%= availableFood[i]['name'] %>  <%= availableFood[i]['username'] %> <%= availableFood[i]['typicalvalues'] %>  <%= availableFood[i]['unitvalue'] %> <%= availableFood[i]['carb'] %>  <%= availableFood[i]['fat'] %>  <%= availableFood[i]['protein'] %>  <%= availableFood[i]['salt'] %>  <%= availableFood[i]['sugar'] %> </li>
          <% } %>
     </ul>
 <p><a href="./">home</a></p>

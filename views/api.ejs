@@ -1,0 +1,21 @@
+<!doctype html>
+  <html>
+    <title> list </title>
+  </head>
+  <body>
+    <h1> <%=shopName%> </h1>
+    <p>our recipes: These our recipes in JSON format</p>
+  <ul>
+     <% for(let i = 0; i < availableBooks.length; i++) { %>
+ 
+ <li><%= availableBooks[i]['name'] %><%= availableFood[i]['typicalvalues'] %><%= availableFood[i]['unitvalue'] %><%= availableFood[i]['carb'] %><%= availableFood[i]['fat']%><%= availableFood[i]['protein'] %><%= availableFood[i]['salt'] %><%= availableFood[i]['sugar'] %></li>
+
+         <% } %>
+
+    </ul>
+
+<p><a href="./">home</a></p>
+
+  </body>
+
+</html>
